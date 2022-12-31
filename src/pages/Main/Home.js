@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import ProductCart from "../../components/ProductCart";
+import { toggle, toggleBrands } from "../../features/filter/filterSlice";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetch("http://localhost:5000/products")
@@ -16,13 +19,20 @@ const Home = () => {
       <div className="mb-10 flex justify-end gap-5">
         <button
           className={`border px-3 py-2 rounded-full font-semibold ${activeClass} `}
+          onClick={() => dispatch(toggle())}
         >
           In Stock
         </button>
-        <button className={`border px-3 py-2 rounded-full font-semibold`}>
+        <button
+          className={`border px-3 py-2 rounded-full font-semibold`}
+          onClick={() => dispatch(toggleBrands("amd"))}
+        >
           AMD
         </button>
-        <button className={`border px-3 py-2 rounded-full font-semibold`}>
+        <button
+          className={`border px-3 py-2 rounded-full font-semibold`}
+          onClick={() => dispatch(toggleBrands("intel"))}
+        >
           Intel
         </button>
       </div>
