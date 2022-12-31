@@ -2,22 +2,35 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProductCart from "../../components/ProductCart";
 import { toggle, toggleBrands } from "../../features/filter/filterSlice";
+import { getProducts } from "../../features/products/productsSlice";
 
 const Home = () => {
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
+  const { isLoading, products, isError, error } = useSelector(
+    (state) => state.products
+  );
+  console.log(products);
   const filters = useSelector((state) => state.filter);
   const dispatch = useDispatch();
   const { brands, stock } = filters;
 
   useEffect(() => {
-    fetch("http://localhost:5000/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data.data));
+    dispatch(getProducts());
   }, []);
+
+  // useEffect(() => {
+  //   fetch("http://localhost:5000/products")
+  //     .then((res) => res.json())
+  //     .then((data) => setProducts(data.data));
+  // }, []);
 
   const activeClass = "text-white  bg-indigo-500 border-white";
 
   let content;
+
+  if (isLoading) {
+    content = <h1>Loading...</h1>;
+  }
 
   if (products.length) {
     content = products.map((product) => (
