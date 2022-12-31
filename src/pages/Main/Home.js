@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProductCart from "../../components/ProductCart";
 import { toggle, toggleBrands } from "../../features/filter/filterSlice";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const filters = useSelector((state) => state.filter);
   const dispatch = useDispatch();
+  const { brands, stock } = filters;
 
   useEffect(() => {
     fetch("http://localhost:5000/products")
@@ -14,6 +16,31 @@ const Home = () => {
   }, []);
 
   const activeClass = "text-white  bg-indigo-500 border-white";
+
+  let content;
+
+  if (products.length) {
+    content = products.map((product) => (
+      <ProductCart key={product.model} product={product} />
+    ));
+  }
+
+  if (products.length && (filters.stock || filters.brands.length)) {
+    content = products
+      .filter((product) => {
+        if (stock) {
+          return product.status === true;
+        }
+        return product;
+      })
+      .filter((product) => {
+        if (filters.brands.length) {
+          return filters.brands.includes(product.brand);
+        }
+        return product;
+      })
+      .map((product) => <ProductCart key={product.model} product={product} />);
+  }
   return (
     <div className="max-w-7xl gap-14 mx-auto my-10">
       <div className="mb-10 flex justify-end gap-5">
@@ -37,9 +64,7 @@ const Home = () => {
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-14">
-        {products.map((product) => (
-          <ProductCart key={product._id} product={product} />
-        ))}
+        {content}
       </div>
     </div>
   );
