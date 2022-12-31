@@ -1,9 +1,12 @@
 import { MdDeleteForever } from "react-icons/md";
 import { BiListPlus } from "react-icons/bi";
 import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../features/cart/cartSlice";
 
 const ProductCart = ({ product }) => {
   const { pathname } = useLocation();
+  const dispatch = useDispatch();
   return (
     <div className="shadow-lg relative rounded-3xl border p-3 flex flex-col text-indigo-900">
       {pathname.includes("cart") && (
@@ -29,7 +32,10 @@ const ProductCart = ({ product }) => {
       </div>
       <div className="flex gap-2 mt-5">
         {!pathname.includes("cart") && (
-          <button className="bg-indigo-500 rounded-full py-1 px-2 flex-1 text-white text-bold">
+          <button
+            onClick={() => dispatch(addToCart(product))}
+            className="bg-indigo-500 rounded-full py-1 px-2 flex-1 text-white text-bold"
+          >
             Add to cart
           </button>
         )}
