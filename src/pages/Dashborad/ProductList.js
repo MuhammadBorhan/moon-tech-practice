@@ -1,13 +1,31 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteProducts,
+  getProducts,
+  toggleDeleteSuccess,
+} from "../../features/products/productsSlice";
 
 const ProductList = () => {
-  const [products, setProducts] = useState([]);
+  const { isLoading, products, deleteSuccess, isError, error } = useSelector(
+    (state) => state.products
+  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetch("http://localhost:5000/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data.data));
-  });
+    dispatch(getProducts());
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && deleteSuccess) {
+      toast.success("Delete Success...");
+      dispatch(toggleDeleteSuccess());
+    }
+  }, [isLoading, deleteSuccess]);
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
   return (
     <div className="flex flex-col justify-center items-center h-full w-full ">
       <div className="w-full max-w-7xl mx-auto rounded-lg  bg-white shadow-lg border border-gray-200">
@@ -53,13 +71,9 @@ const ProductList = () => {
                   <td className="p-2">
                     <div className="text-left">
                       {status ? (
-                        <p classNameName="text-green-500 font-medium">
-                          Available
-                        </p>
+                        <p className="text-green-500 font-medium">Available</p>
                       ) : (
-                        <p classNameName="text-red-500 font-medium">
-                          Stock out
-                        </p>
+                        <p className="text-red-500 font-medium">Stock out</p>
                       )}
                     </div>
                   </td>
@@ -70,7 +84,7 @@ const ProductList = () => {
                   </td>
                   <td className="p-2">
                     <div className="flex justify-center">
-                      <button>
+                      <button onClick={() => dispatch(deleteProducts(_id))}>
                         <svg
                           className="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1"
                           fill="none"
